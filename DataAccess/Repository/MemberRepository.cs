@@ -1,10 +1,7 @@
 ﻿using DataAccess.Context;
 using DataAccess.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repository
 {
@@ -14,6 +11,12 @@ namespace DataAccess.Repository
         public MemberRepository(FptEStoreDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Member?> GetByEmailAndPasswordAsync(string email, string password)
+        {
+            return await _context.Members
+                .FirstOrDefaultAsync(m => m.Email.Equals(email) && m.Password.Equals(password));
         }
     }
 }

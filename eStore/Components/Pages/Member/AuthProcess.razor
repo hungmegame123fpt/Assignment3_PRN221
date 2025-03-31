@@ -1,0 +1,43 @@
+﻿@page "/Member/AuthProcess"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+<h3>Processing login...</h3>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Email { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Role { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, Email),
+            new Claim(ClaimTypes.Role, Role),
+        };
+
+        // Add email claim for member role
+        if (Role == "Member")
+        {
+            claims.Add(new Claim(ClaimTypes.Email, Email));
+        }
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        // This will work because we're at the beginning of the request lifecycle
+        await HttpContextAccessor.HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identity));
+
+        // Redirect to the main page
+        Navigation.NavigateTo("/Product/Index");
+    }
+}
