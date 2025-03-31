@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Context;
 
@@ -26,21 +25,16 @@ public partial class FptEStoreDbContext : DbContext
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
-    private string? GetConnectionString()
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true).Build();
-        return configuration["ConnectionStrings:DefaultConnectionStringDB"];
-    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString());
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=115.73.218.193,1433;Database=FptEStore;User Id=sa;Password=3rdMusketeers@@;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A0B24DED857");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A0B95D85D37");
 
             entity.Property(e => e.CategoryId).ValueGeneratedNever();
             entity.Property(e => e.CategoryName)
@@ -50,9 +44,11 @@ public partial class FptEStoreDbContext : DbContext
 
         modelBuilder.Entity<Member>(entity =>
         {
-            entity.HasKey(e => e.MemberId).HasName("PK__Member__0CF04B18C0AF854C");
+            entity.HasKey(e => e.MemberId).HasName("PK__Member__0CF04B18AA4D92E9");
 
             entity.ToTable("Member");
+
+            entity.HasIndex(e => e.Email, "IX_Member_Email");
 
             entity.Property(e => e.MemberId).ValueGeneratedNever();
             entity.Property(e => e.City)
@@ -74,7 +70,11 @@ public partial class FptEStoreDbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCF0ABD9272");
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCF8803D49D");
+
+            entity.ToTable("Order");
+
+            entity.HasIndex(e => e.MemberId, "IX_Order_MemberId");
 
             entity.Property(e => e.OrderId).ValueGeneratedNever();
             entity.Property(e => e.Freight).HasColumnType("money");
@@ -85,31 +85,37 @@ public partial class FptEStoreDbContext : DbContext
             entity.HasOne(d => d.Member).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.MemberId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__MemberId__398D8EEE");
+                .HasConstraintName("FK_Order_Member");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.ProductId }).HasName("PK__OrderDet__08D097A3F927722C");
+            entity.HasKey(e => new { e.OrderId, e.ProductId });
 
             entity.ToTable("OrderDetail");
+
+            entity.HasIndex(e => e.ProductId, "IX_OrderDetail_ProductId");
 
             entity.Property(e => e.UnitPrice).HasColumnType("money");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderDeta__Order__412EB0B6");
+                .HasConstraintName("FK_OrderDetail_Order");
 
             entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderDeta__Produ__4222D4EF");
+                .HasConstraintName("FK_OrderDetail_Product");
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CDFBDA334B");
+            entity.HasKey(e => e.ProductId).HasName("PK__Product__B40CC6CD4112B4E9");
+
+            entity.ToTable("Product");
+
+            entity.HasIndex(e => e.CategoryId, "IX_Product_CategoryId");
 
             entity.Property(e => e.ProductId).ValueGeneratedNever();
             entity.Property(e => e.ProductName)
@@ -122,7 +128,8 @@ public partial class FptEStoreDbContext : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK_Products_Categories");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Product_Categories");
         });
 
         OnModelCreatingPartial(modelBuilder);

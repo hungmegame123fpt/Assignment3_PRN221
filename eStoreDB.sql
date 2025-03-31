@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE eStoreDB;
+CREATE DATABASE FptEStore;
 GO
 
-USE eStoreDB;
+USE FptEStore;
 GO
 
 -- Create Categories table
