@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DataAccess.Models;
 
 namespace BusinessObject.IService
 {
     public interface IMemberService
     {
+        public Task<Member?> Authenticate(string email, string password);
     }
 }
