@@ -1,5 +1,7 @@
 ﻿using BusinessObject.IService;
 using DataAccess.IRepository;
+using DataAccess.Models;
+using DataAccess.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,10 @@ namespace BusinessObject.Service
         public OrderService(IOrderRepository repo)
         {
             _repo = repo;
+        }
+        public async Task<List<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _repo.GetOrdersByDateRangeAsync(startDate, endDate);
         }
     }
 }

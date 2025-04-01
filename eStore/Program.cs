@@ -18,12 +18,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorizationCore();
 
-var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
-        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<FptEStoreDbContext>(options =>
-     options.UseSqlServer(conString)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
@@ -54,6 +48,8 @@ builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
+
+builder.Services.AddScoped<FptEStoreDbContext>();
 
 var app = builder.Build();
 
