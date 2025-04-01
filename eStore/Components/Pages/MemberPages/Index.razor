@@ -1,0 +1,36 @@
+﻿@page "/members"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DataAccess.Models
+@using DataAccess.Context
+@inject FptEStoreDbContext context
+
+<PageTitle>Members List</PageTitle>
+
+<h1>Members List</h1>
+
+<p>
+    <a href="members/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="@members">
+    <PropertyColumn Property="member => member.Email" />
+    <PropertyColumn Property="member => member.CompanyName" />
+    <PropertyColumn Property="member => member.City" />
+    <PropertyColumn Property="member => member.Country" />
+
+    <TemplateColumn Context="member">
+        <a href="@($"members/edit?memberid={member.MemberId}")">Edit</a> |
+        <a href="@($"members/details?memberid={member.MemberId}")">Details</a> |
+        <a href="@($"members/delete?memberid={member.MemberId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private IQueryable<Member> members;
+
+    protected override void OnInitialized()
+    {
+        members = context.Members;
+    }
+}

@@ -32,12 +32,18 @@
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-        // This will work because we're at the beginning of the request lifecycle
         await HttpContextAccessor.HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity));
 
-        // Redirect to the main page
-        Navigation.NavigateTo("/Product/Index");
+        // Redirect based on role
+        if (Role == "Admin")
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            Navigation.NavigateTo("/Product/Index");
+        }
     }
 }

@@ -1,4 +1,4 @@
-using BusinessObject.IService;
+﻿using BusinessObject.IService;
 using BusinessObject.Service;
 using DataAccess.Context;
 using DataAccess.IRepository;
@@ -15,14 +15,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<FptEStoreDbContext>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorizationCore();
 
-var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+var conString = builder.Configuration.GetConnectionString("DefaultConnectionString") ?? 
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<FptEStoreDbContext>(options =>
      options.UseSqlServer(conString)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+builder.Services.AddQuickGridEntityFrameworkAdapter();
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -62,6 +68,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+    app.UseMigrationsEndPoint();
 }
 
 app.UseHttpsRedirection();
