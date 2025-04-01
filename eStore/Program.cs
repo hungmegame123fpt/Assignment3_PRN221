@@ -49,6 +49,9 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+
 builder.Services.AddScoped<FptEStoreDbContext>();
 
 var app = builder.Build();

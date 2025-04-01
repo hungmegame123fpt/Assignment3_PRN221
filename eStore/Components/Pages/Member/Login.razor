@@ -153,39 +153,35 @@
 
     private async Task LoginProcess()
     {
-        var adminEmail = _configuration["AdminAccount:Email"];
-        var adminPassword = _configuration["AdminAccount:Password"];
+        errorMessage = string.Empty;
 
-        if (Email == adminEmail && Password == adminPassword)
+        Member userAccount = await userService.Authenticate(Email, Password);
+
+        if (userAccount != null)
         {
+            string role = userAccount.MemberId == -1 ? "Admin" : "Member";
+
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, Email),
-                new Claim(ClaimTypes.Role, "Admin"),
-            };
+        {
+            new Claim(ClaimTypes.Email, userAccount.Email),
+            new Claim(ClaimTypes.Role, role)
+        };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            Navigation.NavigateTo($"/Member/AuthProcess?email={Uri.EscapeDataString(Email)}&role=Admin", true);
+            await InvokeAsync(() =>
+            {
+                if (Navigation != null)
+                {
+                    Navigation.NavigateTo("/products", true);
+                }
+            });
         }
         else
         {
-            var userAccount = await userService.Authenticate(Email, Password);
-
-            if (userAccount != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Email, userAccount.Email),
-                    new Claim(ClaimTypes.Role, "Member")
-                };
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                Navigation.NavigateTo($"/Member/AuthProcess?email={Uri.EscapeDataString(userAccount.Email)}&role=Member", true);
-            }
-            else
-            {
-                errorMessage = "Login failed. Please check your credentials.";
-            }
+            errorMessage = "Login failed. Please check your credentials.";
+            await InvokeAsync(StateHasChanged); 
         }
     }
+
 }
+
