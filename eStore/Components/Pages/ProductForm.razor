@@ -1,0 +1,124 @@
+﻿@using DataAccess.Models
+@using BusinessObject.IService
+@page "/product/{id:int?}"
+@inject IProductsService ProductService
+@inject ICategoryService CategoryService
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <!-- Header with gradient -->
+        <div class="card-header text-white text-center" style="background: linear-gradient(135deg, #9932CC, #ff758c);">
+            <h3>@(product.ProductId == 0 ? "🆕 Add New Product" : "✏️ Edit Product")</h3>
+        </div>
+
+        <div class="card-body">
+            <EditForm Model="product" OnValidSubmit="SaveProduct">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <!-- Product Name -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>📌 Product Name</strong></label>
+                            <InputText class="form-control shadow-sm" @bind-Value="product.ProductName" placeholder="Enter product name..." />
+                            <ValidationMessage For="@(() => product.ProductName)" class="text-danger" />
+                        </div>
+                    </div>
+
+                    <!-- Category Dropdown -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>🗂 Category</strong></label>
+                            <InputSelect class="form-control shadow-sm" @bind-Value="product.CategoryId">
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in categoryList)
+                                {
+                                    <option value="@category.CategoryId">@category.CategoryName</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => product.CategoryId)" class="text-danger" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Weight -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>⚖️ Weight</strong></label>
+                            <InputText class="form-control shadow-sm" @bind-Value="product.Weight" placeholder="Enter weight..." />
+                            <ValidationMessage For="@(() => product.Weight)" class="text-danger" />
+                        </div>
+                    </div>
+
+                    <!-- Unit Price -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>💰 Unit Price ($)</strong></label>
+                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitPrice" placeholder="Enter price..." />
+                            <ValidationMessage For="@(() => product.UnitPrice)" class="text-danger" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Units in Stock -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>📦 Units in Stock</strong></label>
+                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitsInStock" placeholder="Enter stock count..." />
+                            <ValidationMessage For="@(() => product.UnitsInStock)" class="text-danger" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg me-3 px-4" style="transition: 0.3s;">
+                        <i class="bi bi-check-circle"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-danger btn-lg rounded-pill shadow-lg px-4" style="transition: 0.3s;" @onclick="Cancel">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Product product = new();
+    private List<Category> categoryList = new();
+
+    [Parameter] public int? Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        categoryList = (await CategoryService.GetAllCategoriesAsync()).ToList();
+
+        if (Id.HasValue && Id.Value > 0)
+        {
+            var existingProduct = await ProductService.GetProductByIdAsync(Id.Value);
+            if (existingProduct != null)
+            {
+                product = existingProduct;
+            }
+        }
+    }
+
+    private async Task SaveProduct()
+    {
+        if (product.ProductId == 0)
+            await ProductService.AddProductAsync(product);
+        else
+            await ProductService.UpdateProductAsync(product);
+
+        Navigation.NavigateTo("/products");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/products");
+    }
+}
