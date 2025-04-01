@@ -1,0 +1,41 @@
+﻿@page "/orderdetails"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DataAccess.Models
+@using DataAccess.Context
+@inject FptEStoreDbContext context
+
+<PageTitle>Orders list</PageTitle>
+
+<h1>Orders list</h1>
+
+@* <p>
+    <a href="orderdetails/create">Create New</a>
+</p> *@
+
+<QuickGrid Class="table" Items="@orderDetails">
+    <PropertyColumn Property="orderdetail => orderdetail.OrderId" Title="Order ID" />
+    <PropertyColumn Property="orderdetail => orderdetail.ProductId" Title="Product ID" />
+    <PropertyColumn Property="orderdetail => orderdetail.Product.ProductName" Title="Product Name" />
+    <PropertyColumn Property="orderdetail => orderdetail.UnitPrice" Title="Unit Price" />
+    <PropertyColumn Property="orderdetail => orderdetail.Quantity" Title="Quantity" />
+    <PropertyColumn Property="orderdetail => orderdetail.Discount" Title="Discount" />
+    <PropertyColumn Property="orderdetail => orderdetail.Order.OrderDate" Title="Order Date" Format="dd/MM/yyyy" />
+
+    <TemplateColumn Context="orderdetail">
+        @* <a href="@($"orderdetails/edit?orderid={orderdetail.OrderId}")">Edit</a> | *@
+        <a href="@($"orderdetails/details?orderid={orderdetail.OrderId}")">Details</a> |
+        <a href="@($"orderdetails/delete?orderid={orderdetail.OrderId}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private IQueryable<OrderDetail> orderDetails;
+
+    protected override void OnInitialized()
+    {
+        orderDetails = context.OrderDetails
+            .Include(od => od.Order)
+            .Include(od => od.Product);
+    }
+}

@@ -1,4 +1,4 @@
-using BusinessObject.IService;
+﻿using BusinessObject.IService;
 using BusinessObject.Service;
 using DataAccess.Context;
 using DataAccess.IRepository;
@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<FptEStoreDbContext>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorizationCore();
 
@@ -24,11 +26,15 @@ builder.Services.AddDbContext<FptEStoreDbContext>(options =>
      options.UseSqlServer(conString)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
+builder.Services.AddQuickGridEntityFrameworkAdapter();
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.LoginPath = new PathString("/Member/Login");
-        options.LogoutPath = new PathString("/Member/Logout");
+        options.LoginPath = new PathString("/Login");
+        options.LogoutPath = new PathString("/Logout");
         options.Cookie.HttpOnly = true;
         options.AccessDeniedPath = new PathString("/Forbidden");
         options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
@@ -55,6 +61,11 @@ builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+
+builder.Services.AddScoped<FptEStoreDbContext>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +73,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+    app.UseMigrationsEndPoint();
 }
 
 app.UseHttpsRedirection();
