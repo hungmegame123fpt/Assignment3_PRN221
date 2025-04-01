@@ -1,5 +1,6 @@
 ﻿using BusinessObject.IService;
 using DataAccess.IRepository;
+using DataAccess.Models;
 using DataAccess.Repository;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,34 @@ namespace BusinessObject.Service
         {
             _repo = repo;
         }
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        {
+            return await _repo.GetAllAsync();
+        }
 
+        public async Task<Product?> GetProductByIdAsync(int id)
+        {
+            return await _repo.GetByIdAsync(id);
+        }
+
+        public async Task AddProductAsync(Product product)
+        {
+            await _repo.CreateAsync(product);
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            await _repo.UpdateAsync(product);
+        }
+
+        public async Task DeleteProductAsync(int id)
+        {
+            await _repo.DeleteAsync(id);
+        }
+
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string keyword)
+        {
+            return await _repo.SearchAsync(keyword);
+        }
     }
 }

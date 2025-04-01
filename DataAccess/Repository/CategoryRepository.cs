@@ -1,5 +1,7 @@
 ﻿using DataAccess.Context;
 using DataAccess.IRepository;
+using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +17,10 @@ namespace DataAccess.Repository
         {
             _context = context;
         }
-    }
+        public async Task<IEnumerable<Category>> GetAllAsync()
+        {
+            return await _context.Categories
+                .ToListAsync();
+        }
+    }   
 }
