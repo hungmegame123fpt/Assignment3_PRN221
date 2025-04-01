@@ -33,8 +33,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.LoginPath = new PathString("/Member/Login");
-        options.LogoutPath = new PathString("/Member/Logout");
+        options.LoginPath = new PathString("/Login");
+        options.LogoutPath = new PathString("/Logout");
         options.Cookie.HttpOnly = true;
         options.AccessDeniedPath = new PathString("/Forbidden");
         options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
@@ -60,6 +60,11 @@ builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+
+builder.Services.AddScoped<FptEStoreDbContext>();
 
 var app = builder.Build();
 

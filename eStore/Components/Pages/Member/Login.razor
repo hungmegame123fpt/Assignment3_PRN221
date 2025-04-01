@@ -1,5 +1,4 @@
-﻿
-@page "/Member/Login"
+﻿@page "/Login"
 
 @using BusinessObject.IService
 @using BusinessObject.Service;
@@ -13,10 +12,9 @@
 @using Microsoft.AspNetCore.Authentication.Cookies
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IConfiguration _configuration
-@layout EmptyLayout
+@layout Layout.MainLayout
 
-
-<div>
+<div class="login-container">
     <div class="login-card">
         <h1>Login</h1>
         <p class="text-muted">Please log in to continue</p>
@@ -34,7 +32,6 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <InputText id="password" type="password" class="form-control" @bind-Value="Password" />
-                @* <ValidationMessage For="@(() => Password)" /> *@
             </div>
 
             <div class="form-group">
@@ -46,7 +43,6 @@
             </div>
         </EditForm>
 
-
         @if (!string.IsNullOrEmpty(errorMessage))
         {
             <div class="alert alert-danger mt-3">@errorMessage</div>
@@ -55,103 +51,99 @@
 </div>
 
 <style>
-    body {
-    background-color: #f8f9fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
     }
 
     .login-card {
-    background: #fff;
-    padding: 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    margin: 2rem auto;
+        background: #fff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
     }
 
     h1 {
-    color: #333;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
     }
 
     .text-muted {
-    color: #6c757d;
-    margin-bottom: 1.5rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
     }
 
     .form-group {
-    margin-bottom: 1.25rem;
-    text-align: left;
+        margin-bottom: 1.25rem;
+        text-align: left;
     }
 
     label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #495057;
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #495057;
     }
 
     .form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .form-control:focus {
-    border-color: #4a6bef;
-    box-shadow: 0 0 0 0.2rem rgba(74, 107, 239, 0.25);
-    outline: none;
-    }
+        .form-control:focus {
+            border-color: #4a6bef;
+            box-shadow: 0 0 0 0.2rem rgba(74, 107, 239, 0.25);
+            outline: none;
+        }
 
     .btn-primary {
-    background-color: #4a6bef;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 8px;
-    width: 100%;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
+        background-color: #4a6bef;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 8px;
+        width: 100%;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
     }
 
-    .btn-primary:hover {
-    background-color: #3a5cdf;
-    transform: translateY(-1px);
-    }
+        .btn-primary:hover {
+            background-color: #3a5cdf;
+            transform: translateY(-1px);
+        }
 
-    .btn-primary:active {
-    transform: translateY(1px);
-    }
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
 
     .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 0.75rem;
-    border-radius: 8px;
-    border: 1px solid #f5c6cb;
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
     }
 
     .validation-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
     }
 </style>
 
-
 @code {
-
     [SupplyParameterFromForm]
     public string Email { get; set; }
     [SupplyParameterFromForm]
@@ -161,48 +153,35 @@
 
     private async Task LoginProcess()
     {
-        var adminEmail = _configuration["AdminAccount:Email"];
-        var adminPassword = _configuration["AdminAccount:Password"];
+        errorMessage = string.Empty;
 
-        if (Email == adminEmail && Password == adminPassword)
+        Member userAccount = await userService.Authenticate(Email, Password);
+
+        if (userAccount != null)
         {
+            string role = userAccount.MemberId == -1 ? "Admin" : "Member";
+
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, Email),
-                new Claim(ClaimTypes.Role, "Admin"),
-            };
+        {
+            new Claim(ClaimTypes.Email, userAccount.Email),
+            new Claim(ClaimTypes.Role, role)
+        };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            // await HttpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-            // Navigation.NavigateTo("/Product/Index");
-            Navigation.NavigateTo($"/Member/AuthProcess?email={Uri.EscapeDataString(Email)}&role=Admin", true);
-        } 
+            await InvokeAsync(() =>
+            {
+                if (Navigation != null)
+                {
+                    Navigation.NavigateTo("/products", true);
+                }
+            });
+        }
         else
         {
-            var userAccount = await userService.Authenticate(Email, Password);
-
-            if (userAccount != null)
-            {
-
-                var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, userAccount.Email),
-                new Claim(ClaimTypes.Role, "Member")
-            };
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                // await HttpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-                // Navigation.NavigateTo("/Product/Index");
-                Navigation.NavigateTo($"/Member/AuthProcess?email={Uri.EscapeDataString(userAccount.Email)}&role=Member", true);
-
-            }
-            else
-            {
-                errorMessage = "Login failed. Please check your credentials.";
-            }
+            errorMessage = "Login failed. Please check your credentials.";
+            await InvokeAsync(StateHasChanged); 
         }
     }
 
 }
+

@@ -18,5 +18,23 @@ namespace DataAccess.Repository
             return await _context.Members
                 .FirstOrDefaultAsync(m => m.Email.Equals(email) && m.Password.Equals(password));
         }
+        public async Task<Member> RegisterAsync(Member member)
+        {
+            _context.Members.Add(member);
+            await _context.SaveChangesAsync();
+            return member;
+        }
+
+        public async Task<Member?> GetByEmailAsync(string email)
+        {
+            return await _context.Members
+                .FirstOrDefaultAsync(m => m.Email.Equals(email));
+        }
+        public async Task<int> GetMaxMemberIdAsync()
+        {
+            return await _context.Members.AnyAsync()
+                ? await _context.Members.MaxAsync(m => m.MemberId)
+                : 0;
+        }
     }
 }
