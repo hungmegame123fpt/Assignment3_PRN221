@@ -24,15 +24,8 @@
             new Claim(ClaimTypes.Role, Role),
         };
 
-        // Add email claim for member role
-        if (Role == "Member")
-        {
-            claims.Add(new Claim(ClaimTypes.Email, Email));
-        }
-
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-        // This will work because we're at the beginning of the request lifecycle
         await HttpContextAccessor.HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity));
