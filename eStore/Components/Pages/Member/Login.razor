@@ -61,8 +61,7 @@
 
     private async Task LoginProcess()
     {
-        var adminEmail = _configuration["AdminAccount:Email"];
-        var adminPassword = _configuration["AdminAccount:Password"];
+        errorMessage = string.Empty;
 
         if (Email == adminEmail && Password == adminPassword)
         {

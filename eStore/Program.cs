@@ -20,7 +20,7 @@ builder.Services.AddScoped<FptEStoreDbContext>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorizationCore();
 
-var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+var conString = builder.Configuration.GetConnectionString("DefaultConnectionStringDB") ?? 
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<FptEStoreDbContext>(options =>
      options.UseSqlServer(conString)
