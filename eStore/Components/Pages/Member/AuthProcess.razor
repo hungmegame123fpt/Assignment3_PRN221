@@ -16,6 +16,10 @@
     [SupplyParameterFromQuery]
     public string Role { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? MemberId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var claims = new List<Claim>
@@ -24,10 +28,9 @@
             new Claim(ClaimTypes.Role, Role),
         };
 
-        // Add email claim for member role
-        if (Role == "Member")
+        if (MemberId != null)
         {
-            claims.Add(new Claim(ClaimTypes.Email, Email));
+            claims.Add(new Claim("MemberId", MemberId));
         }
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -43,7 +46,7 @@
         }
         else
         {
-            Navigation.NavigateTo("/Product/Index");
+            Navigation.NavigateTo("/Products");
         }
     }
 }

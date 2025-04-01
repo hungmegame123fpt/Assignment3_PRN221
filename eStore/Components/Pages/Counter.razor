@@ -1,0 +1,29 @@
+﻿@page "/counter"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<CascadingAuthenticationState>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <h1>Counter</h1>
+
+            <p role="status">Current count: @currentCount</p>
+
+            <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        </Authorized>
+        <NotAuthorized>
+            <h1>Access Denied</h1>
+            <p>You do not have permission to view this page.</p>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

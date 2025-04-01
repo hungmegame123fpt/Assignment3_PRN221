@@ -12,6 +12,7 @@
         {
             await HttpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
-        Navigation.NavigateTo("/Member/Login", forceLoad: true);
+        Navigation.NavigateTo("/Login", true);
     }
 }
+<Logout />
