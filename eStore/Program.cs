@@ -21,8 +21,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddAuthentication()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        options.LoginPath = new PathString("/Member/Login");
-        options.LogoutPath = new PathString("/Member/Logout");
+        options.LoginPath = new PathString("/Login");
+        options.LogoutPath = new PathString("/Logout");
         options.Cookie.HttpOnly = true;
         options.AccessDeniedPath = new PathString("/Forbidden");
         options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
