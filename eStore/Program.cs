@@ -18,7 +18,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorizationCore();
 
-var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+var conString = builder.Configuration.GetConnectionString("DefaultConnectionString") ?? 
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<FptEStoreDbContext>(options =>
      options.UseSqlServer(conString)
