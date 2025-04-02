@@ -29,6 +29,7 @@ namespace BusinessObject.Service
 
         public async Task AddProductAsync(Product product)
         {
+            product.ProductId = await GenerateUniqueProductId();
             await _repo.CreateAsync(product);
         }
 
@@ -45,6 +46,11 @@ namespace BusinessObject.Service
         public async Task<IEnumerable<Product>> SearchProductsAsync(string keyword)
         {
             return await _repo.SearchAsync(keyword);
+        }
+        private async Task<int> GenerateUniqueProductId()
+        {
+            var maxId = await _repo.GetMaxProductIdAsync();
+            return maxId + 1;
         }
     }
 }
