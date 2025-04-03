@@ -17,15 +17,10 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-5 mb-2">
-                    <input type="text" class="form-control shadow-sm" placeholder="🔎 Search by Product Name..." @bind="searchTerm" />
+                    <input type="text" class="form-control shadow-sm" placeholder="🔎 Search by Product Name..." @bind="SearchTerm" />
                 </div>
                 <div class="col-md-5 mb-2">
-                    <input type="number" class="form-control shadow-sm" placeholder="💰 Filter by Price..." @bind="searchPrice" />
-                </div>
-                <div class="col-md-2 mb-2">
-                    <button class="btn btn-primary w-100" @onclick="FilterProducts">
-                        <i class="bi bi-search"></i> Search
-                    </button>
+                    <input type="number" class="form-control shadow-sm" placeholder="💰 Filter by Price..." @bind="SearchPrice" />
                 </div>
             </div>
         </div>
@@ -84,7 +79,25 @@
     private List<Product> filteredProducts = new();
     private string searchTerm = "";
     private decimal? searchPrice;
+    private string SearchTerm
+    {
+        get => searchTerm;
+        set
+        {
+            searchTerm = value;
+            FilterProducts();
+        }
+    }
 
+    private decimal? SearchPrice
+    {
+        get => searchPrice;
+        set
+        {
+            searchPrice = value;
+            FilterProducts();
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         productList = (await ProductService.GetAllProductsAsync()).ToList();
