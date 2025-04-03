@@ -1,0 +1,114 @@
+﻿@using DataAccess.Models
+@using BusinessObject.IService
+@page "/member-products"
+@inject IProductsService ProductService
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary"><i class="bi bi-box-seam"></i> Available Products</h2>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="text" class="form-control shadow-sm" placeholder="🔎 Search by Product Name..." @bind="SearchTerm" />
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="number" class="form-control shadow-sm" placeholder="💰 Filter by Price..." @bind="SearchPrice" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="table-responsive">
+        <table class="table table-hover shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>📌 Product Name</th>
+                    <th>⚖️ Weight</th>
+                    <th>💰 Unit Price ($)</th>
+                    <th>📦 Stock</th>
+                    <th>🛒 Buy</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (filteredProducts.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">No products found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var product in filteredProducts)
+                    {
+                        <tr class="@(product.UnitsInStock == 0 ? "table-danger" : "table-light")">
+                            <td>@product.ProductId</td>
+                            <td>@product.ProductName</td>
+                            <td>@product.Weight</td>
+                            <td>$@product.UnitPrice.ToString("F2")</td>
+                            <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
+                            <td>
+                                <button class="btn btn-success btn-sm rounded-pill"
+                                        @onclick="() => BuyProduct(product.ProductId)"
+                                        disabled="@(product.UnitsInStock == 0)">
+                                    <i class="bi bi-cart"></i> Buy
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<Product> productList = new();
+    private List<Product> filteredProducts = new();
+    private string searchTerm = "";
+    private decimal? searchPrice;
+    private string SearchTerm
+    {
+        get => searchTerm;
+        set
+        {
+            searchTerm = value;
+            FilterProducts();
+        }
+    }
+
+    private decimal? SearchPrice
+    {
+        get => searchPrice;
+        set
+        {
+            searchPrice = value;
+            FilterProducts();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        productList = (await ProductService.GetAllProductsAsync()).ToList();
+        filteredProducts = productList;
+    }
+
+    private void FilterProducts()
+    {
+        filteredProducts = productList
+            .Where(p => (string.IsNullOrEmpty(searchTerm) || p.ProductName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+                        (!searchPrice.HasValue || p.UnitPrice <= searchPrice.Value))
+            .ToList();
+    }
+
+    private void BuyProduct(int productId)
+    {
+        Navigation.NavigateTo($"/create-order");
+    }
+}
