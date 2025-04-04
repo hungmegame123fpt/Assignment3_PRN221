@@ -68,8 +68,11 @@
             @if (role != "Admin")
             {
                 <li>
+                    <NavLink class="nav-link" href="/member-products">
+                        <span class="bi bi-bag" aria-hidden="true"></span> Products List
+                    </NavLink>
                     <NavLink class="nav-link" href="/create-order">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
+                        <span class="bi bi-bag" aria-hidden="true"></span> Create Order
                     </NavLink>
                 </li>
             }
