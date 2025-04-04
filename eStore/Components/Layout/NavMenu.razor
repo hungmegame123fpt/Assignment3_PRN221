@@ -65,11 +65,14 @@
                 </NavLink>
             </li>
 
-            <li>
-              <NavLink class="nav-link" href="/create-order">
-                  <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
-              </NavLink>
-            </li>
+            @if (role != "Admin")
+            {
+                <li>
+                    <NavLink class="nav-link" href="/create-order">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
+                    </NavLink>
+                </li>
+            }
             @if (role == "Admin")
             {
                 <li class="nav-item px-3">

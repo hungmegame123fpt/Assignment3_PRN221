@@ -64,8 +64,6 @@ builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 
-builder.Services.AddScoped<FptEStoreDbContext>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
