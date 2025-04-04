@@ -1,5 +1,6 @@
 ﻿@using DataAccess.Models
 @using BusinessObject.IService
+@using System.ComponentModel.DataAnnotations;
 @page "/product/{id:int?}"
 @inject IProductsService ProductService
 @inject ICategoryService CategoryService
@@ -15,7 +16,7 @@
         <div class="card-body">
             <EditForm Model="product" OnValidSubmit="SaveProduct">
                 <DataAnnotationsValidator />
-
+                <ValidationSummary class="text-danger" />
                 <div class="row">
                     <!-- Product Name -->
                     <div class="col-md-6">
@@ -56,18 +57,16 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label text-primary"><strong>💰 Unit Price ($)</strong></label>
-                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitPrice" placeholder="Enter price..." />
+                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitPrice" placeholder="Enter price..." min="0.01" />
                             <ValidationMessage For="@(() => product.UnitPrice)" class="text-danger" />
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Units in Stock -->
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label text-primary"><strong>📦 Units in Stock</strong></label>
-                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitsInStock" placeholder="Enter stock count..." />
+                            <InputNumber class="form-control shadow-sm" @bind-Value="product.UnitsInStock" placeholder="Enter stock count..." min="1" />
                             <ValidationMessage For="@(() => product.UnitsInStock)" class="text-danger" />
                         </div>
                     </div>
