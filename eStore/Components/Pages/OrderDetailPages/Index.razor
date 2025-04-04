@@ -1,103 +1,195 @@
 ﻿@page "/orderdetails"
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
+@inject IOrderService OrderService
+@inject NavigationManager Navigation
+
 @using DataAccess.Models
-@using DataAccess.Context
-@inject FptEStoreDbContext context
+@using BusinessObject.IService
+
 <style>
-    /* Cải thiện tiêu đề trang */
-    h1 {
-        font-size: 2.5rem;
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* Định dạng bảng */
+    .page-title {
+        font-size: 2.2rem;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #ecf0f1;
+        font-weight: 600;
+    }
+
+    .table-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
     .table {
         width: 100%;
-        margin-top: 20px;
         border-collapse: collapse;
-        background-color: #fff;
     }
-
-        .table th, .table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
 
         .table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
+            background-color: #3498db;
+            color: white;
+            padding: 16px;
+            font-weight: 500;
+            text-align: left;
+            position: sticky;
+            top: 0;
         }
 
-        /* Cải thiện các liên kết trong bảng */
-        .table a {
-            text-decoration: none;
-            color: #007bff;
-            margin: 0 5px;
+        .table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #34495e;
         }
 
-            .table a:hover {
-                text-decoration: underline;
-            }
+        .table tr:last-child td {
+            border-bottom: none;
+        }
 
-        /* Thêm phần hover cho bảng */
+        .table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
         .table tbody tr:hover {
-            background-color: #f1f1f1;
+            background-color: #e8f4fc;
+            transition: background-color 0.2s ease;
         }
 
-    /* Tùy chỉnh các nút (nếu cần thêm) */
-    a {
-        font-weight: bold;
-        color: #007bff;
+    .action-links {
+        display: flex;
+        gap: 12px;
     }
 
-        a:hover {
-            color: #0056b3;
+    .action-link {
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .details-link {
+        color: #2980b9;
+        background-color: #e8f4fc;
+    }
+
+        .details-link:hover {
+            background-color: #d4eaf7;
+            text-decoration: none;
         }
 
-    /* Cải thiện phần không có button "Create New" */
-    p {
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        text-align: center;
+    .delete-link {
+        color: #e74c3c;
+        background-color: #fdedec;
     }
 
+        .delete-link:hover {
+            background-color: #fadbd8;
+            text-decoration: none;
+        }
+
+    .price-cell {
+        font-weight: 500;
+        color: #27ae60;
+    }
+
+    @@media (max-width: 768px) {
+        .page-container {
+            padding: 15px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .table th, .table td {
+            padding: 12px 10px;
+        }
+
+        .action-links {
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
 </style>
 
-<PageTitle>Orders list</PageTitle>
+<div class="page-container">
+    <h1 class="page-title">Orders List</h1>
 
-<h1>Orders list</h1>
-
-@* <p>
-    <a href="orderdetails/create">Create New</a>
-</p> *@
-
-<QuickGrid Class="table" Items="@orderDetails">
-    <PropertyColumn Property="orderdetail => orderdetail.OrderId" Title="Order ID" />
-    <PropertyColumn Property="orderdetail => orderdetail.ProductId" Title="Product ID" />
-    <PropertyColumn Property="orderdetail => orderdetail.Product.ProductName" Title="Product Name" />
-    <PropertyColumn Property="orderdetail => orderdetail.UnitPrice" Title="Unit Price" />
-    <PropertyColumn Property="orderdetail => orderdetail.Quantity" Title="Quantity" />
-    <PropertyColumn Property="orderdetail => orderdetail.Discount" Title="Discount" />
-    <PropertyColumn Property="orderdetail => orderdetail.Order.OrderDate" Title="Order Date" Format="dd/MM/yyyy" />
-
-    <TemplateColumn Context="orderdetail">
-        @* <a href="@($"orderdetails/edit?orderid={orderdetail.OrderId}")">Edit</a> | *@
-        <a href="@($"orderdetails/details?orderid={orderdetail.OrderId}")">Details</a> |
-        <a href="@($"orderdetails/delete?orderid={orderdetail.OrderId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+    @if (orders == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Member ID</th>
+                        <th>Order Date</th>
+                        <th>Required Date</th>
+                        <th>Shipped Date</th>
+                        <th>Freight</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in orders)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.MemberId</td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td>@order.RequiredDate.ToString("dd/MM/yyyy")</td>
+                            <td>@(order.ShippedDate?.ToString("dd/MM/yyyy") ?? "Not Shipped")</td>
+                            <td class="price-cell">@order.Freight?.ToString("C")</td>
+                            <td>
+                                <div class="action-links">
+                                    <a href="@($"orderdetails/details?orderid={order.OrderId}")" class="action-link details-link">Details</a>
+                                    <a href="@($"orderdetails/delete?orderid={order.OrderId}")" class="action-link delete-link">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @code {
-    private IQueryable<OrderDetail> orderDetails;
+    private List<Order> orders;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        orderDetails = context.OrderDetails
-            .Include(od => od.Order)
-            .Include(od => od.Product);
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            var minSqlDate = new DateTime(1753, 1, 1);
+            var maxSqlDate = new DateTime(9999, 12, 31);
+            orders = await OrderService.GetOrdersByDateRangeAsync(minSqlDate, maxSqlDate);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+            orders = new List<Order>();
+        }
     }
 }

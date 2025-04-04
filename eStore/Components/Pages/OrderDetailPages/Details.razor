@@ -1,152 +1,297 @@
 ﻿@page "/orderdetails/details"
-@using Microsoft.EntityFrameworkCore
-@using DataAccess.Models
-@using DataAccess.Context
-@inject FptEStoreDbContext context
+@inject IOrderDetailService OrderDetailService
 @inject NavigationManager NavigationManager
+
+@using DataAccess.Models
+@using BusinessObject.IService
+
 <style>
-h1 {
-    font-size: 2.5rem;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-h2 {
-    font-size: 2rem;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-dl.row {
-    margin: 20px 0;
-}
-
-dt {
-    font-weight: bold;
-    color: #333;
-}
-
-dd {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    color: #555;
-}
-
-dd.col-sm-10 {
-    margin-top: 5px;
-}
-
-a {
-    font-weight: bold;
-    color: #007bff;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-
-a:focus {
-    color: #0056b3;
-    outline: none;
-}
-
-em {
-    font-style: italic;
-    color: #888;
-}
-
-hr {
-    border: 0;
-    border-top: 2px solid #eee;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-div {
-    text-align: center;
-    margin-top: 20px;
-}
-
-div a {
-    padding: 10px 15px;
-    margin-top: 10px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-div a:hover {
-    background-color: #0056b3;
-}
-
-dd {
-    line-height: 1.6;
-}
-
-</style>
-<PageTitle>Details</PageTitle>
-
-<h1>Details</h1>
-
-<div>
-    <h2>OrderDetail</h2>
-    <hr />
-    @if (orderdetail is null)
-    {
-        <p><em>Loading...</em></p>
+    .details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
     }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">Order ID</dt>
-            <dd class="col-sm-10">@orderdetail.OrderId</dd>
-            <dt class="col-sm-2">Product ID</dt>
-            <dd class="col-sm-10">@orderdetail.ProductId</dd>
-            <dt class="col-sm-2">Product Name</dt>
-            <dd class="col-sm-10">@orderdetail.Product?.ProductName</dd>
-            <dt class="col-sm-2">Unit Price</dt>
-            <dd class="col-sm-10">@orderdetail.UnitPrice.ToString("C")</dd>
-            <dt class="col-sm-2">Quantity</dt>
-            <dd class="col-sm-10">@orderdetail.Quantity</dd>
-            <dt class="col-sm-2">Discount</dt>
-            <dd class="col-sm-10">@orderdetail.Discount.ToString("P")</dd>
 
-            <dt class="col-sm-2 mt-4">Order Information</dt>
-            <dd class="col-sm-10 mt-4"></dd>
-            <dt class="col-sm-2">Order Date</dt>
-            <dd class="col-sm-10">@orderdetail.Order?.OrderDate.ToString("dd/MM/yyyy")</dd>
-            <dt class="col-sm-2">Required Date</dt>
-            <dd class="col-sm-10">@orderdetail.Order?.RequiredDate.ToString("dd/MM/yyyy")</dd>
-            <dt class="col-sm-2">Shipped Date</dt>
-            <dd class="col-sm-10">@(orderdetail.Order?.ShippedDate?.ToString("dd/MM/yyyy") ?? "Not shipped")</dd>
-            <dt class="col-sm-2">Freight</dt>
-            <dd class="col-sm-10">@(orderdetail.Order?.Freight?.ToString("C") ?? "N/A")</dd>
-        </dl>
-        <div>
-            <a href="@($"/orderdetails/edit?orderid={orderdetail.OrderId}")">Edit</a> |
-            <a href="@($"/orderdetails")">Back to List</a>
+    .page-title {
+        font-size: 2.2rem;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f3f5;
+        font-weight: 600;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        color: #3498db;
+        margin: 30px 0 20px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #e0e6ea;
+    }
+
+    .table-container {
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th {
+            background-color: #3498db;
+            color: white;
+            padding: 16px;
+            font-weight: 500;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        .table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #ecf0f1;
+            color: #34495e;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e8f4fc;
+            transition: background-color 0.2s ease;
+        }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #4a5568;
+        padding: 10px 0;
+    }
+
+    .detail-value {
+        padding: 10px 0;
+        color: #2d3748;
+        font-size: 1.05rem;
+    }
+
+    .price-value {
+        color: #27ae60;
+        font-weight: 500;
+    }
+
+    .discount-value {
+        color: #e67e22;
+        font-weight: 500;
+    }
+
+    .na-value {
+        color: #a0aec0;
+        font-style: italic;
+    }
+
+    .section-divider {
+        border: 0;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #e0e6ea, transparent);
+        margin: 30px 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    .action-button {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .edit-button {
+        background-color: #3498db;
+        color: white;
+        border: 1px solid #2980b9;
+    }
+
+        .edit-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(41, 128, 185, 0.3);
+        }
+
+    .back-button {
+        background-color: #f8f9fa;
+        color: #4a5568;
+        border: 1px solid #e2e8f0;
+    }
+
+        .back-button:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+    .loading-text {
+        color: #718096;
+        font-style: italic;
+        text-align: center;
+        margin: 50px 0;
+        font-size: 1.2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .details-container {
+            padding: 20px;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .detail-label {
+            padding-bottom: 2px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-button {
+            width: 100%;
+        }
+
+        .table th, .table td {
+            padding: 12px 10px;
+        }
+    }
+</style>
+
+<div class="details-container">
+    <h1 class="page-title">Order Details for Order #@OrderId</h1>
+
+    @if (orderDetails == null)
+    {
+        <p class="loading-text"><em>Loading order details...</em></p>
+    }
+    else if (!orderDetails.Any())
+    {
+        <p class="loading-text">No order details found for this order.</p>
+    }
+    else
+    {
+        <h2 class="section-title">Order Information</h2>
+        <div class="details-grid">
+            <div class="detail-label">Order Date</div>
+            <div class="detail-value">@orderDetails.First().Order?.OrderDate.ToString("dd/MM/yyyy")</div>
+
+            <div class="detail-label">Required Date</div>
+            <div class="detail-value">@orderDetails.First().Order?.RequiredDate.ToString("dd/MM/yyyy")</div>
+
+            <div class="detail-label">Shipped Date</div>
+            <div class="detail-value @(orderDetails.First().Order?.ShippedDate == null ? "na-value" : "")">
+                @(orderDetails.First().Order?.ShippedDate?.ToString("dd/MM/yyyy") ?? "Not shipped")
+            </div>
+
+            <div class="detail-label">Freight</div>
+            <div class="detail-value @(orderDetails.First().Order?.Freight == null ? "na-value" : "price-value")">
+                @(orderDetails.First().Order?.Freight?.ToString("C") ?? "N/A")
+            </div>
+        </div>
+
+        <hr class="section-divider" />
+
+        <h2 class="section-title">Products in Order</h2>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Discount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in orderDetails)
+                    {
+                        <tr>
+                            <td>@detail.ProductId</td>
+                            <td>@detail.Product?.ProductName</td>
+                            <td class="price-value">@detail.UnitPrice.ToString("C")</td>
+                            <td>@detail.Quantity</td>
+                            <td class="discount-value">@detail.Discount.ToString("P1")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="action-buttons">
+            <a href="@($"/orderdetails/edit?orderid={OrderId}")" class="action-button edit-button">
+                Edit Order
+            </a>
+            <a href="/orderdetails" class="action-button back-button">
+                Back to List
+            </a>
         </div>
     }
 </div>
 
 @code {
-    private OrderDetail? orderdetail;
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "orderid")]
+    public int OrderId { get; set; }
 
-    [SupplyParameterFromQuery]
-    private int OrderId { get; set; }
+    private List<OrderDetail> orderDetails;
 
     protected override async Task OnInitializedAsync()
     {
-        orderdetail = await context.OrderDetails
-            .Include(od => od.Order)
-            .Include(od => od.Product)
-            .FirstOrDefaultAsync(m => m.OrderId == OrderId);
+        await LoadOrderDetails();
+    }
 
-        if (orderdetail is null)
+    private async Task LoadOrderDetails()
+    {
+        try
         {
+            orderDetails = await OrderDetailService.GetOrderDetailsByOrderId(OrderId);
+            if (orderDetails == null || !orderDetails.Any())
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order details: {ex.Message}");
+            orderDetails = new List<OrderDetail>();
             NavigationManager.NavigateTo("notfound");
         }
     }
