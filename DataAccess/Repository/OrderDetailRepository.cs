@@ -55,7 +55,11 @@ namespace DataAccess.Repository
         }
         public async Task<List<OrderDetail>> GetOrderDetailByOrderIdAsync(int orderId)
         {
-            return _context.OrderDetails.Where(x => x.OrderId == orderId).ToList();
+            return await _context.OrderDetails
+                .Include(od => od.Product)
+                .Include(od => od.Order)
+                .Where(x => x.OrderId == orderId)
+                .ToListAsync();
         }
     }
 }
