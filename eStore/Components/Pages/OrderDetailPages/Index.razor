@@ -158,8 +158,7 @@
                             <td class="price-cell">@order.Freight?.ToString("C")</td>
                             <td>
                                 <div class="action-links">
-                                    <a href="@($"orderdetails/details?orderid={order.OrderId}")" class="action-link details-link">Details</a>
-                                    <a href="@($"orderdetails/delete?orderid={order.OrderId}")" class="action-link delete-link">Delete</a>
+                                    <a href="@($"/orderdetails/details?orderid={order.OrderId}")" class="action-link details-link">Details</a>
                                 </div>
                             </td>
                         </tr>

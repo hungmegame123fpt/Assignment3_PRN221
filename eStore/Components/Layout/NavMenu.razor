@@ -4,6 +4,150 @@
 @inject NavigationManager Navigation
 @using System.Security.Claims
 
+<style>
+    /* Main navigation container */
+    .navbar {
+        background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+        padding: 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-height: 60px;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white !important;
+        padding: 15px 20px;
+        transition: all 0.3s ease;
+    }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+            text-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
+        }
+
+    /* Toggle button styling */
+    .navbar-toggler {
+        display: none;
+    }
+
+        .navbar-toggler:checked ~ .nav-scrollable {
+            max-height: 1000px;
+            opacity: 1;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+        }
+
+    /* Navigation menu container */
+    .nav-scrollable {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.2s ease;
+        background-color: #2c3e50;
+    }
+
+    @@media (min-width: 768px) {
+        .nav-scrollable {
+            max-height: none;
+            opacity: 1;
+            background-color: transparent;
+        }
+    }
+
+    /* Navigation items */
+    .nav-item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+    /* Navigation links */
+    .nav-link {
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 15px 20px !important;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding-left: 25px !important;
+        }
+
+        .nav-link.active {
+            color: white !important;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+            .nav-link.active::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background-color: #3498db;
+            }
+
+    /* Icons */
+    .bi {
+        margin-right: 12px;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Logout button */
+    .logout-link {
+        color: rgba(255, 100, 100, 0.8) !important;
+    }
+
+        .logout-link:hover {
+            color: #ff6b6b !important;
+            background-color: rgba(255, 100, 100, 0.1) !important;
+        }
+
+    /* Admin section styling */
+    .admin-section {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 5px;
+        padding-top: 5px;
+    }
+
+        .admin-section .nav-link {
+            padding-left: 35px !important;
+        }
+
+        .admin-section .bi {
+            color: #3498db;
+        }
+
+    /* Mobile menu toggle label */
+    .mobile-toggle-label {
+        display: block;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    @@media (min-width: 768px) {
+        .mobile-toggle-label {
+            display: none;
+        }
+    }
+</style>
+
 @code {
     private string? role;
     private bool isAuthenticated = false;
@@ -19,89 +163,97 @@
 
     private async Task Logout()
     {
-        // Optional: Call a real logout method here
-        Navigation.NavigateTo("/logout", true); // Force redirect to your logout handler
+        Navigation.NavigateTo("/logout", true);
     }
 }
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">eStore</a>
+        <label for="nav-toggle" class="mobile-toggle-label">☰</label>
+        <input type="checkbox" id="nav-toggle" class="navbar-toggler" />
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+
         @if (!isAuthenticated)
         {
-            <li class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="/login">
                     <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> Login
                 </NavLink>
-            </li>
-            <li class="nav-item px-3">
+            </div>
+            <div class="nav-item">
                 <NavLink class="nav-link" href="/register">
                     <span class="bi bi-person-plus" aria-hidden="true"></span> Register
                 </NavLink>
-            </li>
+            </div>
         }
         else
         {
-            <li class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="/profile">
-                    <span class="bi bi-person-circle" aria-hidden="true"></span> Profile
+                    <span class="bi bi-person" aria-hidden="true"></span> Profile
                 </NavLink>
-            </li>
-            <li class="nav-item px-3">
+            </div>
+            <div class="nav-item">
                 <NavLink class="nav-link" href="/orderhistory">
-                    <span class="bi bi-person-circle" aria-hidden="true"></span> Order History
+                    <span class="bi bi-receipt" aria-hidden="true"></span> Order History
                 </NavLink>
-            </li>
+            </div>
 
             @if (role != "Admin")
             {
-                <li>
-                    <NavLink class="nav-link" href="/member-products">
-                        <span class="bi bi-bag" aria-hidden="true"></span> Products List
-                    </NavLink>
+                <div class="nav-item">
                     <NavLink class="nav-link" href="/create-order">
-                        <span class="bi bi-bag" aria-hidden="true"></span> Create Order
+                        <span class="bi bi-cart-plus" aria-hidden="true"></span> Create Order
                     </NavLink>
-                </li>
-            }
-            @if (role == "Admin")
-            {
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/products">
-                        <span class="bi bi-bag" aria-hidden="true"></span> Products
-                    </NavLink>
-                    <NavLink class="nav-link" href="/admin/sales-report">
-                        <span class="bi bi-bar-chart" aria-hidden="true"></span> Sales Report
-                    </NavLink>
-                    <NavLink class="nav-link" href="/members">
-                        <span class="bi bi-people" aria-hidden="true"></span> Members List
-                    </NavLink>
-                    <NavLink class="nav-link" href="/orderdetails">
-                        <span class="bi bi-card-list" aria-hidden="true"></span> Orders List
-                    </NavLink>
-                    <NavLink class="nav-link" href="/categories">
-                        <span class="bi bi-card-list" aria-hidden="true"></span> Category List
-                    </NavLink>
-                </li>
+                </div>
             }
 
-            <li class="nav-item px-3">
-                <a class="nav-link" @onclick="Logout" style="cursor:pointer">
+            @if (role == "Admin")
+            {
+                <div class="admin-section">
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/products">
+                            <span class="bi bi-box-seam" aria-hidden="true"></span> Products
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/admin/sales-report">
+                            <span class="bi bi-graph-up" aria-hidden="true"></span> Sales Report
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/members">
+                            <span class="bi bi-people" aria-hidden="true"></span> Members
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/orderdetails">
+                            <span class="bi bi-list-check" aria-hidden="true"></span> Orders
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="/categories">
+                            <span class="bi bi-tags" aria-hidden="true"></span> Categories
+                        </NavLink>
+                    </div>
+                </div>
+            }
+
+            <div class="nav-item">
+                <a class="nav-link logout-link" @onclick="Logout" style="cursor:pointer">
                     <span class="bi bi-box-arrow-right" aria-hidden="true"></span> Logout
                 </a>
-            </li>
+            </div>
         }
     </nav>
 </div>

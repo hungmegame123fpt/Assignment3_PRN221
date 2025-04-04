@@ -5,30 +5,188 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
-<div class="container mt-5">
-    <!-- Page Header -->
+<style>
+    /* Main container styling */
+    .product-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Page title styling */
+    .page-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            margin: 0.75rem auto 0;
+            border-radius: 2px;
+        }
+
+    /* Button styling */
+    .btn-success {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background-color: #10b981;
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+        border: none;
+    }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:active {
+            transform: translateY(0);
+        }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+    .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2);
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+        }
+
+    .table-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Alternate row coloring */
+        .table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Hover effect */
+        .table tbody tr:hover {
+            background-color: #f1f5fe;
+        }
+
+    .loading-text {
+        color: #718096;
+        font-style: italic;
+        text-align: center;
+        margin: 50px 0;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="product-list-container">
+    <h1 class="page-title"><i class="bi bi-box-seam"></i> Product List</h1>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary"><i class="bi bi-box-seam"></i> Product List</h2>
-        <button class="btn btn-success mb-3" @onclick="@(() => Navigation.NavigateTo("/product"))">
+        <button class="btn btn-success" @onclick="@(() => Navigation.NavigateTo("/product"))">
             <i class="bi bi-plus-circle"></i> Create Product
         </button>
     </div>
+
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-5 mb-2">
-                    <input type="text" class="form-control shadow-sm" placeholder="🔎 Search by Product Name..." @bind="SearchTerm" />
+                    <input type="text" class="form-control" placeholder="🔎 Search by Product Name..." @bind="SearchTerm" />
                 </div>
                 <div class="col-md-5 mb-2">
-                    <input type="number" class="form-control shadow-sm" placeholder="💰 Filter by Price..." @bind="SearchPrice" />
+                    <input type="number" class="form-control" placeholder="💰 Filter by Price..." @bind="SearchPrice" />
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Product Table -->
-    <div class="table-responsive">
-        <table class="table table-hover shadow-sm">
+    <div class="table-container">
+        <table class="table table-hover">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>

@@ -8,46 +8,164 @@
 @inject IOrderService OrdersService
 @inject NavigationManager Navigation
 
-<h2 class="text-primary"><i class="bi bi-cart"></i> Create Order</h2>
+<style>
+    /* Main container styling */
+    .order-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-@if (products == null)
-{
-    <p>Loading products...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>📌 Product Name</th>
-                <th>⚖️ Weight</th>
-                <th>💰 Price</th>
-                <th>📦 Stock</th>
-                <th>🛒 Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in products)
-            {
-                <tr>
-                    <td>@product.ProductName</td>
-                    <td>@product.Weight</td>
-                    <td>$@product.UnitPrice.ToString("F2")</td>
-                    <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
-                    <td>
-                        <input type="number" class="form-control" min="1" max="@product.UnitsInStock"
-                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" />
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    /* Page title styling */
+    .page-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
 
-    <button class="btn btn-success mt-3 w-100" @onclick="SubmitOrder"
-            disabled="@(selectedQuantities.Values.All(q => q == 0))">
-        <i class="bi bi-bag-check"></i> Confirm Order
-    </button>
-}
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            margin: 0.75rem auto 0;
+            border-radius: 2px;
+        }
+
+    /* Table container */
+    .table-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    /* Table styling */
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .order-table th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .order-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .order-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Alternate row coloring */
+        .order-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Hover effect */
+        .order-table tbody tr:hover {
+            background-color: #f1f5fe;
+        }
+
+    /* Button styling */
+    .btn-success {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background-color: #10b981;
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+        border: none;
+        width: 100%;
+        justify-content: center;
+    }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:active {
+            transform: translateY(0);
+        }
+
+    .loading-text {
+        color: #718096;
+        font-style: italic;
+        text-align: center;
+        margin: 50px 0;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="order-container">
+    <h1 class="page-title"><i class="bi bi-cart"></i> Create Order</h1>
+
+    @if (products == null)
+    {
+        <p class="loading-text">Loading products...</p>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>📌 Product Name</th>
+                        <th>⚖️ Weight</th>
+                        <th>💰 Price</th>
+                        <th>📦 Stock</th>
+                        <th>🛒 Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in products)
+                    {
+                        <tr>
+                            <td>@product.ProductName</td>
+                            <td>@product.Weight</td>
+                            <td>$@product.UnitPrice.ToString("F2")</td>
+                            <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
+                            <td>
+                                <input type="number" class="form-control" min="1" max="@product.UnitsInStock"
+                                       @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-success mt-3" @onclick="SubmitOrder"
+                disabled="@(selectedQuantities.Values.All(q => q == 0))">
+            <i class="bi bi-bag-check"></i> Confirm Order
+        </button>
+    }
+</div>
 
 @code {
     private List<Product> products = new();
@@ -100,3 +218,4 @@ else
         }
     }
 }
+

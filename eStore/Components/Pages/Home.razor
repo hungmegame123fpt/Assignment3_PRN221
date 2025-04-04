@@ -2,8 +2,451 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 
-<PageTitle>Home</PageTitle>
+<PageTitle>FPT EStore - Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="estore-home">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to FPT EStore</h1>
+            <p class="hero-subtitle">Vietnam's leading technology marketplace with genuine products and expert support</p>
+            <div class="hero-buttons">
+                <a href="/products" class="hero-button">Shop Now</a>
+                <a href="/deals" class="hero-button secondary">Today's Deals</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80"
+                 alt="Latest tech products" class="hero-img" />
+        </div>
+    </div>
 
-Welcome to your new app.
+    <!-- Features Section -->
+    <div class="features-section">
+        <h2 class="section-title">Why Choose FPT EStore?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Fast delivery" class="feature-img" />
+                <div class="feature-content">
+                    <h3>Fast & Reliable Delivery</h3>
+                    <p>Hanoi & HCMC: Next-day delivery | Nationwide: 2-3 days</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Genuine products" class="feature-img" />
+                <div class="feature-content">
+                    <h3>100% Genuine Products</h3>
+                    <p>Official distributor with full manufacturer warranty</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Customer support" class="feature-img" />
+                <div class="feature-content">
+                    <h3>Expert Support</h3>
+                    <p>Vietnamese technical support 24/7</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="category-section">
+        <h2 class="section-title">Shop Popular Categories</h2>
+        <div class="category-grid">
+            <a href="/products/laptops" class="category-card">
+                <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Laptops" />
+                <div class="category-info">
+                    <h3>Laptops & Notebooks</h3>
+                    <p>From 15.000.000₫</p>
+                </div>
+            </a>
+
+            <a href="/products/smartphones" class="category-card">
+                <img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Smartphones" />
+                <div class="category-info">
+                    <h3>Smartphones</h3>
+                    <p>From 5.000.000₫</p>
+                </div>
+            </a>
+
+            <a href="/products/components" class="category-card">
+                <img src="https://images.unsplash.com/photo-1587202372775-e229f1725e1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="PC Components" />
+                <div class="category-info">
+                    <h3>PC Components</h3>
+                    <p>From 1.000.000₫</p>
+                </div>
+            </a>
+
+            <a href="/products/accessories" class="category-card">
+                <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="Accessories" />
+                <div class="category-info">
+                    <h3>Accessories</h3>
+                    <p>From 500.000₫</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Promo Banner -->
+    <div class="promo-banner">
+        <div class="promo-content">
+            <h2>Tech Festival 2025</h2>
+            <p>Enjoy up to 30% off on selected products + 0% interest installment plans</p>
+            <a href="/promotions" class="promo-button">View All Offers</a>
+        </div>
+    </div>
+
+    <!-- Trending Products -->
+    <div class="trending-section">
+        <h2 class="section-title">Trending This Week</h2>
+        <div class="products-grid">
+            <!-- Product cards would be rendered here dynamically -->
+            <div class="product-card">
+                <div class="product-badge">BESTSELLER</div>
+                <img src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                     alt="MacBook Pro" />
+                <div class="product-info">
+                    <h3>MacBook Pro M2</h3>
+                    <div class="price">32.990.000₫ <span class="old-price">35.990.000₫</span></div>
+                    <div class="rating">★★★★☆ (142)</div>
+                </div>
+            </div>
+
+            <!-- More product cards... -->
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base Styles */
+    .estore-home {
+        font-family: 'Segoe UI', 'Roboto', sans-serif;
+        color: #2c3e50;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+        border-radius: 12px;
+        padding: 3rem;
+        margin: 2rem 0;
+    }
+
+    .hero-content {
+        flex: 1;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #1a237e;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #546e7a;
+        margin-bottom: 2rem;
+        max-width: 600px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .hero-button {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        background-color: #1a237e;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .hero-button.secondary {
+            background-color: white;
+            color: #1a237e;
+            border: 2px solid #1a237e;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .hero-image {
+        flex: 1;
+    }
+
+    .hero-img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* Features Section */
+    .features-section {
+        margin: 4rem 0;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #1a237e;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .feature-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .feature-content {
+        padding: 1.5rem;
+    }
+
+        .feature-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #1a237e;
+        }
+
+        .feature-content p {
+            color: #546e7a;
+        }
+
+    /* Categories Section */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .category-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 300px;
+        transition: all 0.3s ease;
+    }
+
+        .category-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .category-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+            .category-card:hover img {
+                transform: scale(1.05);
+            }
+
+    .category-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        padding: 1.5rem;
+        color: white;
+    }
+
+        .category-info h3 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .category-info p {
+            margin: 0.5rem 0 0;
+            font-weight: 500;
+        }
+
+    /* Promo Banner */
+    .promo-banner {
+        background: linear-gradient(135deg, #1a237e, #3949ab);
+        color: white;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        margin: 3rem 0;
+        text-align: center;
+    }
+
+    .promo-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .promo-content p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .promo-button {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        background-color: white;
+        color: #1a237e;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .promo-button:hover {
+            background-color: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+    /* Trending Products */
+    .trending-section {
+        margin: 4rem 0;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #e53935;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 1rem;
+    }
+
+        .product-info h3 {
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+    .price {
+        font-weight: 700;
+        color: #1a237e;
+        font-size: 1.1rem;
+    }
+
+    .old-price {
+        text-decoration: line-through;
+        color: #78909c;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+
+    .rating {
+        color: #ffb300;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero-section {
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .hero-section {
+            padding: 1.5rem;
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>

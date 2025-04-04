@@ -5,61 +5,349 @@
 @inject IOrderService OrderService
 @inject IOrderDetailService OrderDetailService
 
-<h3>Order Details - Order #@OrderId</h3>
+<div class="order-details-container">
+    <div class="order-header">
+        <h3 class="order-title">Order Details <span class="order-number">#@OrderId</span></h3>
+        <div class="order-status @GetStatusClass(order)">
+            <i class="status-icon @GetStatusIcon(order)"></i>
+            @GetStatusText(order)
+        </div>
+    </div>
 
-<div class="container">
     @if (order == null)
     {
-        <p>Loading...</p>
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading order details...</p>
+        </div>
     }
     else
     {
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Order Summary</h5>
-                <p><strong>Order Date:</strong> @order.OrderDate.ToString("d")</p>
-                <p><strong>Required Date:</strong> @order.RequiredDate.ToString("d")</p>
-                <p><strong>Shipped Date:</strong> @(order.ShippedDate?.ToString("d") ?? "Not shipped")</p>
-                <p><strong>Freight:</strong> $@order.Freight?.ToString("F2")</p>
+        <div class="order-summary-card">
+            <div class="summary-header">
+                <h4>Order Summary</h4>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Order Date</span>
+                    <span class="summary-value">@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Required Date</span>
+                    <span class="summary-value">@order.RequiredDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Shipped Date</span>
+                    <span class="summary-value">@(order.ShippedDate?.ToString("MMM dd, yyyy") ?? "Not shipped")</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Freight Cost</span>
+                    <span class="summary-value">$@order.Freight?.ToString("F2")</span>
+                </div>
             </div>
         </div>
 
         @if (orderDetails == null)
         {
-            <p>Loading details...</p>
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading order items...</p>
+            </div>
         }
         else if (!orderDetails.Any())
         {
-            <p>No items in this order.</p>
+            <div class="empty-items">
+                <i class="fas fa-box-open"></i>
+                <p>No items in this order</p>
+            </div>
         }
         else
         {
-            <h4>Items</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product ID</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var detail in orderDetails)
-                    {
-                        var total = detail.Quantity * detail.UnitPrice;
-                        <tr>
-                            <td>@detail.ProductId</td>
-                            <td>@detail.Quantity</td>
-                            <td>$@detail.UnitPrice.ToString("F2")</td>
-                            <td>$@total.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="order-items-section">
+                <h4 class="items-title">Order Items</h4>
+                <div class="items-table-container">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-right">Quantity</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detail in orderDetails)
+                            {
+                                var total = detail.Quantity * detail.UnitPrice;
+                                <tr>
+                                    <td>Product #@detail.ProductId</td>
+                                    <td class="text-right">@detail.Quantity</td>
+                                    <td class="text-right">$@detail.UnitPrice.ToString("F2")</td>
+                                    <td class="text-right">$@total.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            @{
+                                var orderTotal = orderDetails.Sum(d => d.Quantity * d.UnitPrice) + (order.Freight ?? 0);
+                            }
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Subtotal</strong></td>
+                                <td class="text-right">$@orderDetails.Sum(d => d.Quantity * d.UnitPrice).ToString("F2")</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Freight</strong></td>
+                                <td class="text-right">$@order.Freight?.ToString("F2")</td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td colspan="3" class="text-right"><strong>Order Total</strong></td>
+                                <td class="text-right">$@orderTotal.ToString("F2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
         }
     }
 </div>
+
+<style>
+    /* Main container */
+    .order-details-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    /* Order header */
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .order-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .order-number {
+        color: #3498db;
+    }
+
+    .order-status {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .order-status.shipped {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .order-status.processing {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .order-status.pending {
+            background-color: #f5f5f5;
+            color: #616161;
+        }
+
+    .status-icon {
+        font-size: 0.9rem;
+    }
+
+        .status-icon.shipped {
+            color: #2e7d32;
+        }
+
+        .status-icon.processing {
+            color: #ff8f00;
+        }
+
+        .status-icon.pending {
+            color: #616161;
+        }
+
+    /* Loading state */
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+        color: #7f8c8d;
+    }
+
+    .spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Order summary card */
+    .order-summary-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .summary-header {
+        background-color: #f8f9fa;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+        .summary-header h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .summary-label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-value {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    /* Empty items state */
+    .empty-items {
+        text-align: center;
+        padding: 3rem 0;
+        color: #95a5a6;
+    }
+
+        .empty-items i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+
+    /* Order items section */
+    .order-items-section {
+        margin-top: 2rem;
+    }
+
+    .items-title {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .items-table-container {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .items-table th {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .items-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .items-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .items-table tfoot td {
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+    }
+
+    .grand-total td {
+        font-weight: 600;
+        color: #2c3e50;
+        background-color: #f8f9fa;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
 @code {
     [Parameter]
@@ -72,5 +360,29 @@
     {
         order = await Task.Run(() => OrderService.GetOrderById(OrderId));
         orderDetails = await Task.Run(() => OrderDetailService.GetOrderDetailsByOrderId(OrderId));
+    }
+
+    private string GetStatusClass(Order order)
+    {
+        if (order == null) return "pending";
+        if (order.ShippedDate.HasValue) return "shipped";
+        if (DateTime.Now > order.RequiredDate) return "pending";
+        return "processing";
+    }
+
+    private string GetStatusIcon(Order order)
+    {
+        if (order == null) return "fas fa-clock";
+        if (order.ShippedDate.HasValue) return "fas fa-check-circle";
+        if (DateTime.Now > order.RequiredDate) return "fas fa-exclamation-circle";
+        return "fas fa-truck-loading";
+    }
+
+    private string GetStatusText(Order order)
+    {
+        if (order == null) return "Loading";
+        if (order.ShippedDate.HasValue) return "Shipped";
+        if (DateTime.Now > order.RequiredDate) return "Pending";
+        return "Processing";
     }
 }

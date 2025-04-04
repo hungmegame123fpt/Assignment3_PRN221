@@ -5,49 +5,137 @@
 @inject FptEStoreDbContext context
 @inject NavigationManager NavigationManager
 
-<PageTitle>Create</PageTitle>
+<style>
+    /* Main container styling */
+    .members-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-<h1>Create</h1>
+    /* Page title styling */
+    .page-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
 
-<h2>Member</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            margin: 0.75rem auto 0;
+            border-radius: 2px;
+        }
+
+    /* Form container */
+    .form-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+    }
+
+    /* Form styling */
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .form-control {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="members-container">
+    <h1 class="page-title">Create Member</h1>
+
+    <div class="form-container">
         <EditForm method="post" Model="Member" OnValidSubmit="AddMember" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
+            <ValidationSummary class="text-danger" role="alert" />
             <div class="mb-3">
-                <label for="email" class="form-label">Email:</label> 
-                <InputText id="email" @bind-Value="Member.Email" class="form-control" /> 
-                <ValidationMessage For="() => Member.Email" class="text-danger" /> 
-            </div>        
+                <label for="email" class="form-label">Email:</label>
+                <InputText id="email" @bind-Value="Member.Email" class="form-control" />
+                <ValidationMessage For="() => Member.Email" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="companyname" class="form-label">CompanyName:</label> 
-                <InputText id="companyname" @bind-Value="Member.CompanyName" class="form-control" /> 
-                <ValidationMessage For="() => Member.CompanyName" class="text-danger" /> 
-            </div>        
+                <label for="companyname" class="form-label">Company Name:</label>
+                <InputText id="companyname" @bind-Value="Member.CompanyName" class="form-control" />
+                <ValidationMessage For="() => Member.CompanyName" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="city" class="form-label">City:</label> 
-                <InputText id="city" @bind-Value="Member.City" class="form-control" /> 
-                <ValidationMessage For="() => Member.City" class="text-danger" /> 
-            </div>        
+                <label for="city" class="form-label">City:</label>
+                <InputText id="city" @bind-Value="Member.City" class="form-control" />
+                <ValidationMessage For="() => Member.City" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="country" class="form-label">Country:</label> 
-                <InputText id="country" @bind-Value="Member.Country" class="form-control" /> 
-                <ValidationMessage For="() => Member.Country" class="text-danger" /> 
-            </div>        
+                <label for="country" class="form-label">Country:</label>
+                <InputText id="country" @bind-Value="Member.Country" class="form-control" />
+                <ValidationMessage For="() => Member.Country" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password:</label> 
-                <InputText id="password" @bind-Value="Member.Password" class="form-control" /> 
-                <ValidationMessage For="() => Member.Password" class="text-danger" /> 
-            </div>        
+                <label for="password" class="form-label">Password:</label>
+                <InputText id="password" @bind-Value="Member.Password" class="form-control" />
+                <ValidationMessage For="() => Member.Password" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
-</div>
 
-<div>
-    <a href="/members">Back to List</a>
+    <a href="/members" class="back-link">Back to List</a>
 </div>
 
 @code {
