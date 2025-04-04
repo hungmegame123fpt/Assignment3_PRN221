@@ -3,7 +3,79 @@
 @using BusinessObject.IService
 @using DataAccess.Models
 @inject IOrderService OrderService
+<style>
+    /* Cải thiện tiêu đề trang */
+    h3 {
+        font-size: 2rem;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
+    /* Định dạng các nhãn và ô nhập liệu */
+    label {
+        font-size: 1rem;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    input[type="date"] {
+        padding: 8px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 20px;
+    }
+
+    /* Định dạng nút "Get Orders" */
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    /* Định dạng bảng */
+    .table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    /* Thông báo nếu không có dữ liệu */
+    p {
+        font-size: 1.2rem;
+        color: #888;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+</style>
 <h3>Sales Report</h3>
 
 <label>From Date:</label>

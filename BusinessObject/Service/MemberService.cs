@@ -1,6 +1,7 @@
 ﻿using BusinessObject.IService;
 using DataAccess.IRepository;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,14 @@ namespace BusinessObject.Service
         {
             var maxId = await _repo.GetMaxMemberIdAsync();
             return maxId + 1;
+        }
+        public async Task<Member> GetMemberById(int memberId)
+        {
+            return await _repo.GetById(memberId);
+        }
+        public async Task UpdateMember(Member member)
+        {
+            await _repo.UpdateMember(member);
         }
     }
 }

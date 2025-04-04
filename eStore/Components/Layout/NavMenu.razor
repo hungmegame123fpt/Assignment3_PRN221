@@ -1,4 +1,30 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@using System.Security.Claims
+
+@code {
+    private string? role;
+    private bool isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+    }
+
+    private async Task Logout()
+    {
+        // Optional: Call a real logout method here
+        Navigation.NavigateTo("/logout", true); // Force redirect to your logout handler
+    }
+}
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">eStore</a>
     </div>
@@ -13,39 +39,56 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/Login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/register">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/products">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Products
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/admin/sales-report">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Sales Report
-            </NavLink>
-            <NavLink class="nav-link" href="/members">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Members List
-            </NavLink>
-            <NavLink class="nav-link" href="/orderdetails">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Orders List
-            </NavLink>
-            <NavLink class="nav-link" href="/member-products">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member P.List
-            </NavLink>
-            <NavLink class="nav-link" href="/create-order">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
-            </NavLink>
-        </li>
-        
+        @if (!isAuthenticated)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/login">
+                    <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> Login
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/register">
+                    <span class="bi bi-person-plus" aria-hidden="true"></span> Register
+                </NavLink>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/profile">
+                    <span class="bi bi-person-circle" aria-hidden="true"></span> Profile
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/products">
+                    <span class="bi bi-bag" aria-hidden="true"></span> Products
+                </NavLink>
+            </li>
+            <li>
+              <NavLink class="nav-link" href="/create-order">
+                  <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
+              </NavLink>
+            </li>
+            @if (role == "Admin")
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="/admin/sales-report">
+                        <span class="bi bi-bar-chart" aria-hidden="true"></span> Sales Report
+                    </NavLink>
+                    <NavLink class="nav-link" href="/members">
+                        <span class="bi bi-people" aria-hidden="true"></span> Members List
+                    </NavLink>
+                    <NavLink class="nav-link" href="/orderdetails">
+                        <span class="bi bi-card-list" aria-hidden="true"></span> Orders List
+                    </NavLink>
+                </li>
+            }
+
+            <li class="nav-item px-3">
+                <a class="nav-link" @onclick="Logout" style="cursor:pointer">
+                    <span class="bi bi-box-arrow-right" aria-hidden="true"></span> Logout
+                </a>
+            </li>
+        }
     </nav>
 </div>
-

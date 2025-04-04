@@ -4,7 +4,90 @@
 @using DataAccess.Context
 @inject FptEStoreDbContext context
 @inject NavigationManager NavigationManager
+<style>
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
 
+h2 {
+    font-size: 2rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+dl.row {
+    margin: 20px 0;
+}
+
+dt {
+    font-weight: bold;
+    color: #333;
+}
+
+dd {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+dd.col-sm-10 {
+    margin-top: 5px;
+}
+
+a {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+a:focus {
+    color: #0056b3;
+    outline: none;
+}
+
+em {
+    font-style: italic;
+    color: #888;
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid #eee;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+div {
+    text-align: center;
+    margin-top: 20px;
+}
+
+div a {
+    padding: 10px 15px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+div a:hover {
+    background-color: #0056b3;
+}
+
+dd {
+    line-height: 1.6;
+}
+
+</style>
 <PageTitle>Details</PageTitle>
 
 <h1>Details</h1>

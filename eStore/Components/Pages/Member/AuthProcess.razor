@@ -8,17 +8,17 @@
 <h3>Processing login...</h3>
 
 @code {
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string Email { get; set; }
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string Email { get; set; }
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string Role { get; set; }
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string Role { get; set; }
 
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string? MemberId { get; set; }
+        [Parameter]
+        [SupplyParameterFromQuery]
+        public string? MemberId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -34,12 +34,12 @@
         }
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
 
         await HttpContextAccessor.HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(identity));
+            CookieAuthenticationDefaults.AuthenticationScheme, principal,
+            new AuthenticationProperties { IsPersistent = true });
 
-        // Redirect based on role
         if (Role == "Admin")
         {
             Navigation.NavigateTo("/");
