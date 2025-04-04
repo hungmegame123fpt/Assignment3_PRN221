@@ -36,7 +36,7 @@ else
                     <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
                     <td>
                         <input type="number" class="form-control" min="1" max="@product.UnitsInStock"
-                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" @bind:after="CalculateTotalPrice" />
+                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" @bind:after="ValidateQuantity" />
                     </td>
                 </tr>
             }
@@ -66,6 +66,21 @@ else
             }
         }
         CalculateTotalPrice();
+    }
+    private void ValidateQuantity()
+    {
+        foreach (var product in products)
+        {
+            if (selectedQuantities[product.ProductId] > product.UnitsInStock)
+            {
+                selectedQuantities[product.ProductId] = product.UnitsInStock; // Reset to max stock
+            }
+            else if (selectedQuantities[product.ProductId] < 0)
+            {
+                selectedQuantities[product.ProductId] = 0; // Prevent zero or negative input
+            }
+        }
+        CalculateTotalPrice(); // Ensure the total updates correctly
     }
     private void CalculateTotalPrice()
     {
