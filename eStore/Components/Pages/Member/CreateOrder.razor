@@ -36,13 +36,13 @@ else
                     <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
                     <td>
                         <input type="number" class="form-control" min="1" max="@product.UnitsInStock"
-                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" />
+                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" @bind:after="CalculateTotalPrice" />
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
+    <h4 class="text-end mt-3">🧾 Total Price: <span class="fw-bold text-success">$@TotalPrice.ToString("F2")</span></h4>
     <button class="btn btn-success mt-3 w-100" @onclick="SubmitOrder"
             disabled="@(selectedQuantities.Values.All(q => q == 0))">
         <i class="bi bi-bag-check"></i> Confirm Order
@@ -52,7 +52,7 @@ else
 @code {
     private List<Product> products = new();
     private Dictionary<int, int> selectedQuantities = new();
-
+    private decimal TotalPrice = 0;
     protected override async Task OnInitializedAsync()
     {
         products = (await ProductService.GetAllProductsAsync()).ToList();
@@ -65,8 +65,14 @@ else
                 selectedQuantities[product.ProductId] = 0; // Default to 0 quantity
             }
         }
+        CalculateTotalPrice();
     }
-
+    private void CalculateTotalPrice()
+    {
+        TotalPrice = selectedQuantities
+            .Where(q => q.Value > 0)
+            .Sum(q => products.FirstOrDefault(p => p.ProductId == q.Key)?.UnitPrice * q.Value ?? 0);
+    }
     private async Task SubmitOrder()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
