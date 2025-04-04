@@ -36,5 +36,12 @@ namespace DataAccess.Repository
                 ? await _context.Members.MaxAsync(m => m.MemberId)
                 : 0;
         }
+        public async Task<Member> GetById(int memberId) => await _context.Members.FirstOrDefaultAsync(s => s.MemberId == memberId);
+
+        public async Task UpdateMember(Member member)
+        {
+            _context.Members.Update(member);
+            await _context.SaveChangesAsync();
+        }
     }
 }

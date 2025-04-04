@@ -1,0 +1,124 @@
+﻿@page "/Profile"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using DataAccess.Models
+@using BusinessObject.IService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+@inject NavigationManager Navigation
+@inject IMemberService userService
+
+<h3 class="profile-title">Profile</h3>
+
+<div class="profile-container">
+    @if (member != null)
+    {
+        <div class="profile-card">
+            <div class="profile-header">
+                <h1>@member.Email</h1>
+            </div>
+
+            @if (isEditing)
+            {
+                <!-- Form chỉnh sửa -->
+                <div class="profile-edit-form">
+                    <label for="company">Company:</label>
+                    <input type="text" id="company" @bind="member.CompanyName" />
+
+                    <label for="city">City:</label>
+                    <input type="text" id="city" @bind="member.City" />
+
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" @bind="member.Country" />
+
+                    <button @onclick="SaveChanges">Save</button>
+                    <button @onclick="CancelEdit">Cancel</button>
+                </div>
+            }
+            else
+            {
+                <!-- Hiển thị thông tin người dùng -->
+                <div class="profile-details">
+                    <p><strong>Company:</strong> @member.CompanyName</p>
+                    <p><strong>City:</strong> @member.City</p>
+                    <p><strong>Country:</strong> @member.Country</p>
+                    <button @onclick="EditProfile">Edit</button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="loading">Loading...</p>
+    }
+</div>
+
+<link rel="stylesheet" href="css/profile.css">
+
+@code {
+    private Member? member;
+    private bool isEditing = false;
+    private CancellationTokenSource cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (!user.Identity.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/Login");
+                return;
+            }
+
+            int memberId = int.Parse(user.FindFirst(c => c.Type == "MemberId")?.Value ?? "1");
+
+            // Kiểm tra nếu component chưa bị dispose trước khi gọi API
+            if (!cts.Token.IsCancellationRequested)
+            {
+                member = await userService.GetMemberById(memberId);
+                StateHasChanged(); // Cập nhật UI an toàn
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching member data: {ex.Message}");
+        }
+    }
+
+    private void EditProfile()
+    {
+        isEditing = true;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (member != null)
+        {
+            try
+            {
+                // Lưu thông tin người dùng đã chỉnh sửa
+                await userService.UpdateMember(member);
+                isEditing = false;
+                StateHasChanged(); // Cập nhật UI để hiển thị thông tin đã lưu
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving changes: {ex.Message}");
+            }
+        }
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+    }
+
+    public void Dispose()
+    {
+        cts.Cancel();  // Hủy các task đang chạy để tránh lỗi ObjectDisposedException
+        cts.Dispose();
+    }
+}

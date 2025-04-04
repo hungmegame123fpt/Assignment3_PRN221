@@ -9,5 +9,7 @@ namespace DataAccess.IRepository
         public Task<Member> RegisterAsync(Member member);
         public Task<Member?> GetByEmailAsync(string email);
         Task<int> GetMaxMemberIdAsync();
+        public Task<Member> GetById(int memberId);
+        public Task UpdateMember(Member member);
     }
 }
