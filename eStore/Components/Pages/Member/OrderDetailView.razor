@@ -1,0 +1,76 @@
+﻿@page "/order/{OrderId:int}"
+@using DataAccess.Models
+@using BusinessObject.IService
+
+@inject IOrderService OrderService
+@inject IOrderDetailService OrderDetailService
+
+<h3>Order Details - Order #@OrderId</h3>
+
+<div class="container">
+    @if (order == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Order Summary</h5>
+                <p><strong>Order Date:</strong> @order.OrderDate.ToString("d")</p>
+                <p><strong>Required Date:</strong> @order.RequiredDate.ToString("d")</p>
+                <p><strong>Shipped Date:</strong> @(order.ShippedDate?.ToString("d") ?? "Not shipped")</p>
+                <p><strong>Freight:</strong> $@order.Freight?.ToString("F2")</p>
+            </div>
+        </div>
+
+        @if (orderDetails == null)
+        {
+            <p>Loading details...</p>
+        }
+        else if (!orderDetails.Any())
+        {
+            <p>No items in this order.</p>
+        }
+        else
+        {
+            <h4>Items</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in orderDetails)
+                    {
+                        var total = detail.Quantity * detail.UnitPrice;
+                        <tr>
+                            <td>@detail.ProductId</td>
+                            <td>@detail.Quantity</td>
+                            <td>$@detail.UnitPrice.ToString("F2")</td>
+                            <td>$@total.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+
+    private Order order;
+    private IEnumerable<DataAccess.Models.OrderDetail> orderDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await Task.Run(() => OrderService.GetOrderById(OrderId));
+        orderDetails = await Task.Run(() => OrderDetailService.GetOrderDetailsByOrderId(OrderId));
+    }
+}

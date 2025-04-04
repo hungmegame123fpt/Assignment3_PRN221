@@ -14,5 +14,6 @@ namespace DataAccess.IRepository
         Task AddOrderDetailAsync(OrderDetail orderDetail);
         Task UpdateOrderDetailAsync(OrderDetail orderDetail);
         Task DeleteOrderDetailAsync(int orderId, int productId);
+        Task<List<OrderDetail>> GetOrderDetailByOrderIdAsync(int orderId);
     }
 }
