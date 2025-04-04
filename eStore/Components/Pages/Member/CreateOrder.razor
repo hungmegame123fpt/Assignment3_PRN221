@@ -1,6 +1,9 @@
 ﻿@page "/create-order"
 @using DataAccess.Models
 @using BusinessObject.IService
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
 @inject IProductsService ProductService
 @inject IOrderService OrdersService
 @inject NavigationManager Navigation
@@ -66,29 +69,34 @@ else
 
     private async Task SubmitOrder()
     {
-        var order = new Order
-            {
-                MemberId = 1, // Replace with logged-in user ID
-                OrderDate = DateTime.Now,
-                RequiredDate = DateTime.Now.AddDays(7)
-            };
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        var orderDetails = selectedQuantities
-            .Where(q => q.Value > 0)
-            .Select(q => new OrderDetail
+        if (user.Identity.IsAuthenticated)
+        {
+            var memberId = user.FindFirst(c => c.Type == "MemberId")?.Value;
+            var role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+
+            var order = new Order
                 {
-                    ProductId = q.Key,
-                    Quantity = q.Value
-                }).ToList();
+                    MemberId = Int32.Parse(memberId),
+                    OrderDate = DateTime.Now,
+                    RequiredDate = DateTime.Now.AddDays(7)
+                };
 
-        if (orderDetails.Any())
-        {
-            await OrdersService.CreateOrderAsync(order, orderDetails);
-            Navigation.NavigateTo("/member-products");
-        }
-        else
-        {
-            // Show error message
+            var orderDetails = selectedQuantities
+                .Where(q => q.Value > 0)
+                .Select(q => new OrderDetail
+                    {
+                        ProductId = q.Key,
+                        Quantity = q.Value
+                    }).ToList();
+
+            if (orderDetails.Any())
+            {
+                await OrdersService.CreateOrderAsync(order, orderDetails);
+                Navigation.NavigateTo("/member-products");
+            }
         }
     }
 }
