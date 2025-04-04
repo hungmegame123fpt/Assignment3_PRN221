@@ -10,5 +10,8 @@ namespace DataAccess.IRepository
     public interface ICategoryRepository
     {
         Task<IEnumerable<Category>> GetAllAsync();
+        Task CreateAsync(Category category);
+        Task UpdateAsync(Category category);
+        Task DeleteAsync(int categoryId);
     }
 }

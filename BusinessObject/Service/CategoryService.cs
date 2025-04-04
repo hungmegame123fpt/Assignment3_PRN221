@@ -21,5 +21,19 @@ namespace BusinessObject.Service
         {
             return await _repo.GetAllAsync();
         }
+        public async Task CreateCategoryAsync(Category category)
+        {
+            await _repo.CreateAsync(category);
+        }
+
+        public async Task UpdateCategoryAsync(Category category)
+        {
+            await _repo.UpdateAsync(category);
+        }
+
+        public async Task DeleteCategoryAsync(int categoryId)
+        {
+            await _repo.DeleteAsync(categoryId);
+        }
     }
 }
