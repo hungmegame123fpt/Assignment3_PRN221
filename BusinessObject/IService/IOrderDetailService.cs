@@ -14,5 +14,6 @@ namespace BusinessObject.IService
         Task CreateOrderDetailAsync(OrderDetail orderDetail);
         Task UpdateOrderDetailAsync(OrderDetail orderDetail);
         Task DeleteOrderDetailAsync(int orderId, int productId);
+        Task<List<OrderDetail>> GetOrderDetailsByOrderId(int orderId);
     }
 }

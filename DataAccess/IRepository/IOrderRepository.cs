@@ -14,5 +14,6 @@ namespace DataAccess.IRepository
         Task<bool> CreateAsync(Order order, List<OrderDetail> orderDetails);
         Task UpdateAsync(Order order);
         Task DeleteAsync(int id);
+        Task<List<Order>> GetMemberOrders(int memberId);
     }
 }

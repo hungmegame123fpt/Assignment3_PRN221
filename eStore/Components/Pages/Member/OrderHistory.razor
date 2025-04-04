@@ -1,0 +1,82 @@
+﻿<h3>Order History</h3>
+@page "/orderhistory"
+@using DataAccess.Models
+@using BusinessObject.IService
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IOrderService OrderService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="container">
+    @if (orders == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!orders.Any())
+    {
+        <p>No orders found.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var order in orders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Order #@order.OrderId</h5>
+                            <p class="card-text"><strong>Date:</strong> @order.OrderDate.ToString("d")</p>
+                            <p class="card-text"><strong>Required:</strong> @order.RequiredDate.ToString("d")</p>
+                            <p class="card-text"><strong>Shipped:</strong> @(order.ShippedDate?.ToString("d") ?? "Not shipped")</p>
+                            <p class="card-text"><strong>Freight:</strong> $@order.Freight?.ToString("F2")</p>
+                            <button class="btn btn-primary" @onclick="() => NavigateToDetails(order.OrderId)">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IEnumerable<Order> orders;
+    private string debugMemberId = "Not set";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var memberIdClaim = user.FindFirst("MemberId")?.Value;
+            if (int.TryParse(memberIdClaim, out int memberId))
+            {
+                debugMemberId = memberId.ToString();
+                orders = await GetOrdersByMemberId(memberId);
+            }
+            else
+            {
+                debugMemberId = "Failed to parse MemberId";
+                orders = new List<Order>();
+            }
+        }
+        else
+        {
+            debugMemberId = "User not authenticated";
+            orders = new List<Order>();
+        }
+    }
+
+    private async Task<IEnumerable<Order>> GetOrdersByMemberId(int memberId)
+    {
+        return await Task.Run(() => OrderService.GetOrdersByMemberId(memberId));
+    }
+
+    private void NavigateToDetails(int orderId)
+    {
+        NavigationManager.NavigateTo($"/order/{orderId}");
+    }
+}

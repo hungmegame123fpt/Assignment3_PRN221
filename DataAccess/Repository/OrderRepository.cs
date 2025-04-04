@@ -88,6 +88,10 @@ namespace DataAccess.Repository
                 ? await _context.Orders.MaxAsync(m => m.OrderId)
                 : 0;
         }
+        public async Task<List<Order>> GetMemberOrders(int memberId)
+        {
+            return await _context.Orders.Where(x => x.MemberId == memberId).ToListAsync();
+        }
 
     }
 }

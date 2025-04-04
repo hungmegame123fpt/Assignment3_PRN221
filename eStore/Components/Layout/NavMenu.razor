@@ -60,10 +60,11 @@
                 </NavLink>
             </li>
             <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/products">
-                    <span class="bi bi-bag" aria-hidden="true"></span> Products
+                <NavLink class="nav-link" href="/orderhistory">
+                    <span class="bi bi-person-circle" aria-hidden="true"></span> Order History
                 </NavLink>
             </li>
+
             <li>
               <NavLink class="nav-link" href="/create-order">
                   <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
@@ -72,6 +73,9 @@
             @if (role == "Admin")
             {
                 <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="/products">
+                        <span class="bi bi-bag" aria-hidden="true"></span> Products
+                    </NavLink>
                     <NavLink class="nav-link" href="/admin/sales-report">
                         <span class="bi bi-bar-chart" aria-hidden="true"></span> Sales Report
                     </NavLink>

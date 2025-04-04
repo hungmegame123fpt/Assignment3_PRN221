@@ -53,5 +53,9 @@ namespace DataAccess.Repository
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<List<OrderDetail>> GetOrderDetailByOrderIdAsync(int orderId)
+        {
+            return _context.OrderDetails.Where(x => x.OrderId == orderId).ToList();
+        }
     }
 }
