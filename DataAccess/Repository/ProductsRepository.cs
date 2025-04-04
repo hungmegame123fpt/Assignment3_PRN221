@@ -54,6 +54,11 @@ namespace DataAccess.Repository
                                  .Include(p => p.Category)
                                  .ToListAsync();
         }
-
+        public async Task<int> GetMaxProductIdAsync()
+        {
+            return await _context.Products.AnyAsync()
+                ? await _context.Products.MaxAsync(m => m.ProductId)
+                : 0;
+        }
     }
 }

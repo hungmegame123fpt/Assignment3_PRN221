@@ -1,0 +1,102 @@
+﻿@page "/create-order"
+@using DataAccess.Models
+@using BusinessObject.IService
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+@inject IProductsService ProductService
+@inject IOrderService OrdersService
+@inject NavigationManager Navigation
+
+<h2 class="text-primary"><i class="bi bi-cart"></i> Create Order</h2>
+
+@if (products == null)
+{
+    <p>Loading products...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>📌 Product Name</th>
+                <th>⚖️ Weight</th>
+                <th>💰 Price</th>
+                <th>📦 Stock</th>
+                <th>🛒 Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.ProductName</td>
+                    <td>@product.Weight</td>
+                    <td>$@product.UnitPrice.ToString("F2")</td>
+                    <td>@(product.UnitsInStock > 0 ? product.UnitsInStock : "Out of Stock")</td>
+                    <td>
+                        <input type="number" class="form-control" min="1" max="@product.UnitsInStock"
+                               @bind="selectedQuantities[product.ProductId]" @bind:event="oninput" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-success mt-3 w-100" @onclick="SubmitOrder"
+            disabled="@(selectedQuantities.Values.All(q => q == 0))">
+        <i class="bi bi-bag-check"></i> Confirm Order
+    </button>
+}
+
+@code {
+    private List<Product> products = new();
+    private Dictionary<int, int> selectedQuantities = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = (await ProductService.GetAllProductsAsync()).ToList();
+
+        // Initialize the selected quantities for each product
+        foreach (var product in products)
+        {
+            if (!selectedQuantities.ContainsKey(product.ProductId))
+            {
+                selectedQuantities[product.ProductId] = 0; // Default to 0 quantity
+            }
+        }
+    }
+
+    private async Task SubmitOrder()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var memberId = user.FindFirst(c => c.Type == "MemberId")?.Value;
+            var role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+
+            var order = new Order
+                {
+                    MemberId = Int32.Parse(memberId),
+                    OrderDate = DateTime.Now,
+                    RequiredDate = DateTime.Now.AddDays(7)
+                };
+
+            var orderDetails = selectedQuantities
+                .Where(q => q.Value > 0)
+                .Select(q => new OrderDetail
+                    {
+                        ProductId = q.Key,
+                        Quantity = q.Value
+                    }).ToList();
+
+            if (orderDetails.Any())
+            {
+                await OrdersService.CreateOrderAsync(order, orderDetails);
+                Navigation.NavigateTo("/member-products");
+            }
+        }
+    }
+}

@@ -15,5 +15,6 @@ namespace DataAccess.IRepository
         Task DeleteAsync(int id);
         Task<IEnumerable<Product>> SearchAsync(string keyword);
         Task UpdateAsync(Product product);
+        Task<int> GetMaxProductIdAsync();
     }
 }

@@ -21,5 +21,24 @@ namespace BusinessObject.Service
         {
             return await _repo.GetOrdersByDateRangeAsync(startDate, endDate);
         }
+        public async Task<Order?> GetOrderByIdAsync(int id)
+        {
+            return await _repo.GetByIdAsync(id);
+        }
+
+        public async Task<bool> CreateOrderAsync(Order order, List<OrderDetail> orderDetails)
+        {
+            return await _repo.CreateAsync(order, orderDetails);
+        }
+
+        public async Task UpdateOrderAsync(Order order)
+        {
+            await _repo.UpdateAsync(order);
+        }
+
+        public async Task DeleteOrderAsync(int id)
+        {
+            await _repo.DeleteAsync(id);
+        }
     }
 }

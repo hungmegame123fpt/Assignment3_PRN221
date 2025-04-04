@@ -39,7 +39,6 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-
         @if (!isAuthenticated)
         {
             <li class="nav-item px-3">
@@ -64,6 +63,11 @@
                 <NavLink class="nav-link" href="/products">
                     <span class="bi bi-bag" aria-hidden="true"></span> Products
                 </NavLink>
+            </li>
+            <li>
+              <NavLink class="nav-link" href="/create-order">
+                  <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Member Create Order
+              </NavLink>
             </li>
             @if (role == "Admin")
             {
